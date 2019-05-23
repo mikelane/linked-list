@@ -39,6 +39,15 @@ class TestBasicLinearLinkedList:
                 assert empty_list.head.key == key
                 assert empty_list.head.value == value
 
+            def it_appends_to_empty_list(self, key, value, empty_list):
+                assert len(empty_list) == 0
+                assert empty_list.head is None
+
+                empty_list.append(key, value)
+                assert len(empty_list) == 1
+                assert empty_list.head.key == key
+                assert empty_list.head.value == value
+
             def it_prepend_to_list_with_existing_nodes(self, key, value, list_with_nodes):
                 assert len(list_with_nodes) == 10
                 assert list_with_nodes.head is not None
@@ -48,13 +57,35 @@ class TestBasicLinearLinkedList:
                 assert list_with_nodes.head.key == key
                 assert list_with_nodes.head.value == value
 
+            def it_appends_to_list_with_existing_nodes(self, key, value, list_with_nodes):
+                assert len(list_with_nodes) == 10
+                assert list_with_nodes.head is not None
+
+                list_with_nodes.append(key, value)
+                assert len(list_with_nodes) == 11
+
+                # TODO: change when implementing slicing
+                last_item = list_with_nodes.head
+                while last_item.next:
+                    last_item = last_item.next
+
+                assert last_item.key == key
+
         class DescribePrependMultipleItems:
             class ContextValidInputs:
-                def it_adds_a_list_of_key_value_pairs(self, items_to_add, empty_list):
+                def it_prepends_many_pairs_to_an_empty_list(self, items_to_add, empty_list):
                     assert len(empty_list) == 0
                     assert empty_list.head is None
 
-                    empty_list.add_all(items_to_add)
+                    empty_list.prepend_many(items_to_add)
+                    assert len(empty_list) == len(items_to_add)
+                    assert empty_list.head.key == items_to_add[-1][0]
+
+                def it_appends_many_pairs_to_an_empty_list(self, items_to_add, empty_list):
+                    assert len(empty_list) == 0
+                    assert empty_list.head is None
+
+                    empty_list.append_many(items_to_add)
                     assert len(empty_list) == len(items_to_add)
                     assert empty_list.head.key == items_to_add[0][0]
 
@@ -74,6 +105,13 @@ class TestBasicLinearLinkedList:
 
     class ContextInvalidKey:
         def test_prepend(self, empty_list):
+            assert len(empty_list) == 0
+            assert empty_list.head is None
+
+            with pytest.raises(TypeError):
+                empty_list.prepend(['lists are not hashable'], 'this should cause a TypeError')
+
+        def test_append(self, empty_list):
             assert len(empty_list) == 0
             assert empty_list.head is None
 
